@@ -1,0 +1,159 @@
+:root {
+  --app-bg: #f5ebd3;
+  --app-surface: #fbf6ea;
+  --app-subtle: #ecdcb4;
+  --app-border: #d1b583;
+  --app-text: #2e2214;
+  --app-muted: #6c5f49;
+  --app-accent: #d49a2a;
+  --app-header-bg: #0f2a27;
+  --app-header-text: #f5ebd3;
+  --app-focus: #214844;
+  --tone-success: #24572e;
+  --tone-success-bg: #dcebd5;
+  --tone-info: #1d4a68;
+  --tone-info-bg: #d6e6f0;
+  --tone-warn: #6b4500;
+  --tone-warn-bg: #fbe9b7;
+  --tone-danger: #830b0b;
+  --tone-danger-bg: #fbd0cc;
+  --tone-risky: #7a2e0b;
+  --tone-risky-bg: #fbdcc4;
+  --radius: 10px;
+  --gutter: 16px;
+  --tabbar-height: 60px;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --app-bg: #011717;
+    --app-surface: #062120;
+    --app-subtle: #0f2a27;
+    --app-border: #173833;
+    --app-text: #f5ebd3;
+    --app-muted: #e4ca94;
+    --app-accent: #f5c86a;
+    --app-header-bg: #062120;
+    --app-focus: #fbe38a;
+    --tone-success: #8cc79a;
+    --tone-success-bg: #12302a;
+    --tone-info: #8cbfe0;
+    --tone-info-bg: #0f2a3a;
+    --tone-warn: #f5c86a;
+    --tone-warn-bg: #2e1f06;
+    --tone-danger: #ef7466;
+    --tone-danger-bg: #3b0606;
+    --tone-risky: #f6a982;
+    --tone-risky-bg: #3a1a08;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--app-text);
+  background-color: var(--app-bg);
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+:focus-visible {
+  outline: 2px solid var(--app-focus);
+  outline-offset: 2px;
+}
+
+/* Disabled buttons go neutral, so they never read as a dimmed brand color. */
+.p-button:disabled:not(.p-button-outlined):not(.p-button-text):not(.p-button-loading) {
+  opacity: 1;
+  background: var(--app-subtle);
+  border-color: var(--app-border);
+  color: var(--app-muted);
+  cursor: not-allowed;
+}
+
+.panel {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius);
+  padding: 16px;
+  min-width: 0;
+}
+
+.panel-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* Tag colors from docs/PALETTE.md; PrimeVue has no orange severity, so "Risky" gets its own class. */
+.p-tag.p-tag-success {
+  background: var(--tone-success-bg);
+  color: var(--tone-success);
+}
+
+.p-tag.p-tag-info {
+  background: var(--tone-info-bg);
+  color: var(--tone-info);
+}
+
+.p-tag.p-tag-warn {
+  background: var(--tone-warn-bg);
+  color: var(--tone-warn);
+}
+
+.p-tag.p-tag-danger {
+  background: var(--tone-danger-bg);
+  color: var(--tone-danger);
+}
+
+.p-tag.tag-risky {
+  background: var(--tone-risky-bg);
+  color: var(--tone-risky);
+}
+
+.p-message.p-message-warn:not(.p-message-simple) {
+  background: var(--tone-warn-bg);
+  color: var(--tone-warn);
+  outline-color: var(--tone-warn);
+}
+
+.p-message.p-message-error:not(.p-message-simple) {
+  background: var(--tone-danger-bg);
+  color: var(--tone-danger);
+}

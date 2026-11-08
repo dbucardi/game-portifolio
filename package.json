@@ -1,0 +1,32 @@
+{
+  "name": "dragons-of-mugloar",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @mugloar/server --filter @mugloar/web dev",
+    "dev:web": "pnpm --filter @mugloar/web dev",
+    "dev:server": "pnpm --filter @mugloar/server dev",
+    "start:server": "pnpm --filter @mugloar/server start",
+    "bench": "pnpm --filter @mugloar/server bench",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.9.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-vue": "^10.12.0",
+    "prettier": "^3.9.10",
+    "typescript": "~5.9.3"
+  }
+}
