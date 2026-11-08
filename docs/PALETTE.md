@@ -13,8 +13,6 @@ The look: ads are notes on parchment, written in dark brown ink. Actions use the
 
 **Why not red for actions:** red already means error and danger (failed ad, life lost, Retry). A red primary made every Solve/Buy button look like a warning, and its dark, muted tone at 60% opacity looked the same as a disabled button. Dragon red is now only used for danger. The primary is a saturated indigo that no status uses (success is green, info is steel blue, warn is gold, danger is red). Disabled buttons are neutral parchment, so they can't be mistaken for a dimmed brand color.
 
-Alternatives, with screenshots and a ready `theme.ts` each, are in [themes/](themes/README.md): `indigo` (chosen), `teal` (ties to the forest art, but sits next to the success green), `purple` (fantasy feel, but less conventional).
-
 ## Scales
 
 ### Parchment: surfaces and neutrals (Ink = steps 700–950)

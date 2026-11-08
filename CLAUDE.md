@@ -2,7 +2,7 @@
 
 A pnpm workspace with three packages: a shared TypeScript core, a Fastify bot service and a Vue 3 web app. Requirement IDs (`BOT-05`, `WEB-12`, `FUN-02`…) refer to `docs/REQUIREMENTS.md`.
 
-> **Docs live in `docs/`:** `REQUIREMENTS.md` (the contract), `PLAN.md` (stack and design), `PALETTE.md` (theme tokens), `diagrams/architecture.excalidraw` (high-level), `diagrams/backend-bot.excalidraw` and `diagrams/frontend-ui.excalidraw` (sketches), and `themes/` (theme options). **Every change must keep the code, the requirements, the sketches and the docs in sync** (see "Docs to touch per change").
+> **Docs live in `docs/`:** `REQUIREMENTS.md` (the contract), `PLAN.md` (stack and design), `PALETTE.md` (theme tokens), `diagrams/architecture.excalidraw` (high-level), `diagrams/backend-bot.excalidraw` and `diagrams/frontend-ui.excalidraw` (sketches). **Every change must keep the code, the requirements, the sketches and the docs in sync** (see "Docs to touch per change").
 
 ## Layout
 
@@ -23,7 +23,7 @@ apps/server/            # @mugloar/server: Fastify bot service
   src/runs/registry.ts  # in-memory RunRegistry: cap (429), TTL, SSE subscribers
   src/benchmark/        # N games with capped concurrency, stats, calibration
   scripts/bench.ts      # `pnpm bench`, writes docs/benchmark.json
-docs/                   # requirements, plan, palette, diagrams/, themes/, benchmark.json
+docs/                   # requirements, plan, palette, diagrams/, benchmark.json
 apps/web/               # @mugloar/web: Vue 3 + Pinia + Vue Router + PrimeVue 4
   src/views/            # PlayView (/play, manual), AutopilotView (/autopilot, bot runs)
   src/components/       # display only: read stores, call actions, no API calls (WEB-10)
@@ -94,7 +94,7 @@ A change is not done until each file below has been checked and, where affected,
 | Package, app, external service or the HTTP flow between them | `docs/diagrams/architecture.excalidraw` and `docs/PLAN.md`                                                              |
 | Bot loop, registry, strategy, server structure               | `docs/diagrams/backend-bot.excalidraw` and `docs/PLAN.md`                                                               |
 | UI layout, component, copy or state                          | `docs/diagrams/frontend-ui.excalidraw` (desktop and mobile) and `docs/PLAN.md`                                          |
-| Theme or colours                                             | `src/theme.ts`, `src/assets/main.css`, `docs/PALETTE.md` and `docs/themes/README.md`                                    |
+| Theme or colours                                             | `src/theme.ts`, `src/assets/main.css` and `docs/PALETTE.md`                                                             |
 | Setting added, renamed or default changed                    | `apps/*/.env.example` and the README settings table                                                                     |
 | Benchmark results                                            | `README.md`, with numbers from a real `pnpm bench` run only                                                             |
 
