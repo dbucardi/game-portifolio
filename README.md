@@ -108,9 +108,9 @@ Runs live in memory, so a restart forgets them. On `SIGINT`/`SIGTERM` the servic
 | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md)                                   | What the solution must do, stack-agnostic, with stable IDs (`BOT-05`, `WEB-12`, `FUN-02`…) |
 | [`docs/PLAN.md`](docs/PLAN.md)                                                   | How it is built: stack, architecture, endpoints, stores, strategy, testing                 |
 | [`docs/PALETTE.md`](docs/PALETTE.md)                                             | Colour tokens taken from the game art, and why indigo is the action colour                 |
-| [`docs/diagrams/architecture.excalidraw`](docs/diagrams/architecture.excalidraw) | High-level view: web app, bot service, shared core and the game API                        |
-| [`docs/diagrams/backend-bot.excalidraw`](docs/diagrams/backend-bot.excalidraw)   | Bot service components and the `playGame()` loop                                           |
-| [`docs/diagrams/frontend-ui.excalidraw`](docs/diagrams/frontend-ui.excalidraw)   | `/play` and `/autopilot` at desktop 1280px and mobile 390px, with their states             |
+| [`docs/diagrams/architecture.excalidraw.svg`](docs/diagrams/architecture.excalidraw.svg) | High-level view: web app, bot service, shared core and the game API                        |
+| [`docs/diagrams/backend-bot.excalidraw.svg`](docs/diagrams/backend-bot.excalidraw.svg)   | Bot service components and the `playGame()` loop                                           |
+| [`docs/diagrams/frontend-ui.excalidraw.svg`](docs/diagrams/frontend-ui.excalidraw.svg)   | `/play` and `/autopilot` at desktop 1280px and mobile 390px, with their states             |
 | [`docs/themes/`](docs/themes/README.md)                                          | Theme options (indigo applied, teal, purple) with screenshots and a `theme.ts` each        |
 
-Open the `.excalidraw` files at [excalidraw.com](https://excalidraw.com) or with the VS Code Excalidraw extension.
+Open the `.excalidraw.svg` files in any browser. To edit one, open it at [excalidraw.com](https://excalidraw.com) or with the VS Code Excalidraw extension.

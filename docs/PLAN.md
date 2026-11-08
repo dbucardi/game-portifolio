@@ -20,7 +20,7 @@ The README includes a Spring Boot mapping (§5) [DOC-07].
 
 ## 2. Architecture
 
-The high-level architecture diagram is in [diagrams/architecture.excalidraw](diagrams/architecture.excalidraw). The backend bot diagram is in [diagrams/backend-bot.excalidraw](diagrams/backend-bot.excalidraw). Open it at [excalidraw.com](https://excalidraw.com) or with the VS Code Excalidraw extension.
+The high-level architecture diagram is in [diagrams/architecture.excalidraw.svg](diagrams/architecture.excalidraw.svg). The backend bot diagram is in [diagrams/backend-bot.excalidraw.svg](diagrams/backend-bot.excalidraw.svg). Open the SVG in any browser. To edit it, use [excalidraw.com](https://excalidraw.com) or the VS Code Excalidraw extension.
 
 ```
 dragons-of-mugloar/
@@ -83,7 +83,7 @@ Design patterns used:
 
 ### apps/web
 
-The UI/UX sketch is in [diagrams/frontend-ui.excalidraw](diagrams/frontend-ui.excalidraw).
+The UI/UX sketch is in [diagrams/frontend-ui.excalidraw.svg](diagrams/frontend-ui.excalidraw.svg).
 
 - **Framework and routing:** `<script setup lang="ts">`, with Vue Router serving `/play` (manual) and `/autopilot` (bot runs).
 - **State: Pinia** [WEB-10 – WEB-13]. Vuex and TanStack Query are not used, because the state is one game session and live run streams, not data cached from a server.
