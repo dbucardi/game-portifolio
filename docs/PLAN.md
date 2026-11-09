@@ -55,7 +55,7 @@ Design patterns used:
   - Error bodies are read as text [ERR-01, API-10].
 - **`api/schemas.ts`:** zod schemas for every response, including coercion of `reward` [VAL-01, VAL-02].
 - **`decode.ts`:** `decodeAd(ad)`, which decodes Base64 with `atob` and ROT13 [CORE-02, CORE-03].
-- **`strategy/`:** the `Strategy` interface, `chooseActions(state, ads, shop) → Action[]`, where `Action` is `Solve | Buy`. It ships with two implementations, `ExpectedValueStrategy` and the baseline `SafestFirstStrategy` [CORE-05].
+- **`strategy/`:** the `Strategy` interface, `chooseActions(state, ads, shop) → Action[]`, where `Action` is `Solve | Buy`. It ships with three implementations: `ExpectedValueStrategy`, the baseline `SafestFirstStrategy` and `StealBudgetStrategy` [CORE-05, CORE-09]. A strategy may also implement `observe(event)`; the runner shows it every game event, so a strategy can learn from outcomes. One instance plays one game, so it can keep state.
 - **`runner.ts`:** `playGame(client, strategy, { maxTurns, signal, onEvent })` runs the loop in BOT-01 to BOT-08.
   - It emits typed events: `started`, `turn`, `solved`, `failed`, `bought` and `gameOver`.
   - The stop signal is checked between actions, so stopping is cooperative [BOT-12].
@@ -101,6 +101,7 @@ The UI/UX sketch is in [diagrams/frontend-ui.excalidraw.svg](diagrams/frontend-u
   - The API clients are injected through `provide`/`inject`.
   - The EventSource is closed when the user leaves the page.
 
+- **Quest-aware suspense copy [FUN-03]:** `gameFeel.ts` reads the quest kind from the quest text with `questKind` (`steal`, `escort`, `transport`, `sell`, `advertise`, `defend`, `other`; `steal` is tested first). `flavourText` picks the setting-out line by kind and the climax line by risk tier, with fighting words only for `defend`. `oddsText` takes the ad and says no odds for a steal [API-20, API-21]. `questStage` gives the three stage emoji shown by `QuestSuspense`.
 - **Components:** `StatsBar`, `AdBoard` and `AdCard`, `QuestSuspense` and `QuestResult` (the suspense phase and the reveal, both shown in the `Dialog` in `AdBoard`), `ShopPanel`, `ReputationPanel` (an explicit Investigate button, because it uses a turn) [WEB-16], `EventLog`, the play toolbar (a red "Abandon game" during a game, no button otherwise) [WEB-17], `RunControls`, `RunList`, and `ScoreChart` (inline SVG). Components only display state; they read stores and call their actions.
 - **UI library: PrimeVue 4**, styled mode. The theme is one `theme.ts` (`definePreset` on Aura, using the tokens in [PALETTE.md](PALETTE.md)), and components are imported one by one.
 
@@ -128,7 +129,7 @@ The UI/UX sketch is in [diagrams/frontend-ui.excalidraw.svg](diagrams/frontend-u
 
 1. Decode the ads [CORE-02].
 2. Map each probability label to an estimated success rate [CORE-04]. Start with a hand-tuned table, then **calibrate it from benchmark data** [BOT-22]. This is what makes the bot reliable rather than lucky.
-3. Filter out trap ads, such as ones containing _steal_, but only for ads the spike data confirms are harmful [CORE-07].
+3. Filter out trap ads, such as ones containing _steal_, but only for ads the spike data confirms are harmful [CORE-07]. `steal-budget` is the exception: steals succeed about 93% of the time up to the 5th, then almost never, and reputation does not recover (API-20, API-21). It treats steals as safe until 5 have succeeded, then as traps again [CORE-09]. The label is ignored for steals inside the budget, because it does not predict their outcome.
 4. Score each ad as `p * reward - (1 - p) * lifeCost`, where `lifeCost = LIFE_VALUE / max(lives, 1)` and `LIFE_VALUE = 240`. A life costs 240 gold at 1 life, 120 at 2 and 80 at 3. When scores are within 5 gold, prefer ads that are about to expire [CORE-06]. The web app's Advisor EV is this same score for the current lives, rounded [WEB-07].
    | Label            | p    | Label              | p    |
    | ---------------- | ---- | ------------------ | ---- |
@@ -141,7 +142,7 @@ The UI/UX sketch is in [diagrams/frontend-ui.excalidraw.svg](diagrams/frontend-u
 5. **Shopping rules:**
    - If lives are low, buy `hpot` first [BOT-05].
    - If there is spare gold beyond the potion reserve, buy upgrades: 100-cost items early, 300-cost items later.
-   - Use the benchmark to check whether a higher level really improves the odds.
+   - Use the benchmark to check whether a higher level really improves the odds. Matching quest words to shop items was tried and found no effect beyond the label (API-22), so no strategy buys for a specific quest.
 6. If no ad is safe, take the safest one anyway [CORE-08].
 7. The bot plays until lives run out [BOT-06] or it is stopped [BOT-12], so the strategy also has to cope with the late game.
 

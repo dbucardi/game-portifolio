@@ -44,7 +44,7 @@ curl localhost:3000/api/runs
 curl -X POST localhost:3000/api/runs/<runId>/stop
 
 # Benchmark: plays N games per strategy against the live API and saves docs/benchmark.json
-pnpm bench --games 30 --strategies expected-value,safest-first
+pnpm bench --games 30 --strategies expected-value,safest-first,steal-budget
 ```
 
 ### API
@@ -81,7 +81,7 @@ From the environment or `apps/server/.env`, validated at startup:
 | ----------------------- | ------------------------------------- | ---------------------------------------------------------- |
 | `PORT`, `HOST`          | `3000`, `0.0.0.0`                     | Where the service listens                                  |
 | `GAME_API_URL`          | `https://dragonsofmugloar.com/api/v2` | Game API base URL                                          |
-| `DEFAULT_STRATEGY`      | `expected-value`                      | `expected-value` or `safest-first`                         |
+| `DEFAULT_STRATEGY`      | `expected-value`                      | `expected-value`, `safest-first` or `steal-budget`         |
 | `MAX_TURNS`             | `500`                                 | Default safety limit on turns per game (1–5000)            |
 | `MAX_ACTIVE_RUNS`       | `5`                                   | Runs playing at once; more are refused with 429            |
 | `BENCH_MAX_CONCURRENCY` | `4`                                   | Benchmark games in flight at once, to spare the public API |

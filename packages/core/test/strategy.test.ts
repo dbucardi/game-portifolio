@@ -1,8 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import type { ShopItem } from '../src/api/schemas';
 import type { Ad } from '../src/decode';
+import type { GameEvent } from '../src/events';
 import { riskTier, successRate, UNKNOWN_SUCCESS_RATE } from '../src/probability';
-import { createStrategy, ExpectedValueStrategy, expectedValue, SafestFirstStrategy, STRATEGY_NAMES } from '../src/strategy';
+import {
+  createStrategy,
+  ExpectedValueStrategy,
+  expectedValue,
+  SafestFirstStrategy,
+  STEAL_SUCCESS_RATE,
+  StealBudgetStrategy,
+  STRATEGY_NAMES,
+} from '../src/strategy';
 import { gameStats as stats } from '../src/testing';
 
 let nextId = 0;
@@ -120,6 +129,46 @@ describe('SafestFirstStrategy', () => {
       { type: 'buy', itemId: 'hpot' },
       { type: 'solve', adId: safest.adId },
     ]);
+  });
+});
+describe('StealBudgetStrategy (CORE-09)', () => {
+  const steal = ad({ message: 'Steal water delivery to Obed Derrickson', reward: 140, probability: 'Sure thing' });
+  const honest = ad({ message: 'Escort Roy Wilkinson to plains', reward: 78, probability: 'Piece of cake' });
+  const outcome = (type: 'solved' | 'failed', target: Ad): GameEvent => ({
+    type,
+    adId: target.adId,
+    adMessage: target.message,
+    reward: target.reward,
+    probability: target.probability,
+    resultMessage: '',
+    stats: stats(),
+  });
+
+  it('picks a well-paid steal while the budget lasts', () => {
+    const [first] = new StealBudgetStrategy().rankAds(stats(), [honest, steal]);
+
+    expect(first?.ad).toBe(steal);
+    expect(first?.successRate).toBe(STEAL_SUCCESS_RATE);
+    expect(first?.trap).toBe(false);
+  });
+  it('treats steals as traps again once the budget is spent', () => {
+    const strategy = new StealBudgetStrategy({ stealBudget: 2 });
+
+    strategy.observe(outcome('solved', steal));
+    strategy.observe(outcome('solved', steal));
+    expect(strategy.rankAds(stats(), [steal, honest]).map((entry) => entry.ad)).toEqual([honest, steal]);
+  });
+  it('spends budget only on successful steals', () => {
+    const strategy = new StealBudgetStrategy({ stealBudget: 1 });
+
+    strategy.observe(outcome('failed', steal));
+    strategy.observe(outcome('solved', honest));
+    expect(strategy.rankAds(stats(), [honest, steal])[0]?.ad).toBe(steal);
+  });
+  it('still picks an ad when only steals are on offer (CORE-08)', () => {
+    const strategy = new StealBudgetStrategy({ stealBudget: 0 });
+
+    expect(strategy.chooseActions(stats(), [steal], shop)).toEqual([{ type: 'solve', adId: steal.adId }]);
   });
 });
 describe('createStrategy (CORE-05)', () => {

@@ -37,12 +37,16 @@ export async function playGame(api: GameApi, strategy: Strategy, options: PlayGa
   const { gameId } = game;
   const started = startedEvent(game);
   let stats: GameStats = started.stats;
+  const emit = (event: GameEvent): void => {
+    strategy.observe?.(event);
+    onEvent(event);
+  };
 
-  onEvent(started);
+  emit(started);
 
   const end = (reason: GameEndReason): GameResult => {
     if (reason !== 'stopped') {
-      onEvent(gameOverEvent(reason, stats));
+      emit(gameOverEvent(reason, stats));
     }
 
     return { gameId, reason, stats };
@@ -91,7 +95,7 @@ export async function playGame(api: GameApi, strategy: Strategy, options: PlayGa
           const event = await perform(api, gameId, action, ads, currentShop, stats);
 
           stats = event.stats;
-          onEvent(event);
+          emit(event);
           rejectedMoves = 0;
         } catch (error) {
           // A purchase spends a turn, so the ad picked with it can expire first: refetch and go on.

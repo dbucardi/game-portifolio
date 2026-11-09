@@ -21,7 +21,7 @@ export const DEFAULT_EV_OPTIONS: ExpectedValueOptions = {
 };
 
 export class ExpectedValueStrategy implements Strategy {
-  readonly name = 'expected-value';
+  readonly name: string = 'expected-value';
   private readonly options: ExpectedValueOptions;
 
   constructor(options: Partial<ExpectedValueOptions> = {}) {

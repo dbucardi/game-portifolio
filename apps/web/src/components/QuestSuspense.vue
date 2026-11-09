@@ -1,21 +1,22 @@
 <script setup lang="ts">
 import { riskTier } from '@mugloar/core';
 import { computed } from 'vue';
-import { oddsText } from '@/gameFeel';
+import { oddsText, questStage } from '@/gameFeel';
 import type { Suspense } from '@/stores/game';
 
 const props = defineProps<{ suspense: Suspense }>();
 const quest = computed(() => props.suspense.ad);
 const tier = computed(() => riskTier(quest.value.probability));
+const stage = computed(() => questStage(quest.value.message));
 </script>
 
 <template>
   <div class="quest" :class="[`tier-${tier}`, { 'is-climax': suspense.phase === 'climax' }]" data-testid="quest-suspense">
     <h3 class="quest-title">Quest in progress</h3>
     <div class="stage" data-testid="suspense-stage" aria-hidden="true">
-      <span class="hero">🛡️</span>
-      <span class="clash">⚔️</span>
-      <span class="foe">🐉</span>
+      <span class="hero">{{ stage.hero }}</span>
+      <span class="clash">{{ stage.clash }}</span>
+      <span class="foe">{{ stage.foe }}</span>
     </div>
     <p class="flavour" data-testid="flavour" aria-live="polite">{{ suspense.flavour }}</p>
     <div class="progress" role="progressbar" aria-label="Quest progress" :style="{ '--suspense-ms': `${suspense.durationMs}ms` }">
@@ -31,7 +32,7 @@ const tier = computed(() => riskTier(quest.value.probability));
         <dd>-1 life</dd>
       </div>
     </dl>
-    <p class="odds">{{ oddsText(quest.probability) }}</p>
+    <p class="odds">{{ oddsText(quest) }}</p>
   </div>
 </template>
 

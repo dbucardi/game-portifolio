@@ -4,7 +4,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { GameApiClient } from '../src/api/client';
 import type { GameEvent } from '../src/events';
 import { MAX_REJECTED_MOVES, playGame } from '../src/runner';
-import { ExpectedValueStrategy } from '../src/strategy';
+import { ExpectedValueStrategy, type Strategy } from '../src/strategy';
 import { createFakeGameApi, type FakeGameOptions } from '../src/testing';
 
 const BASE = 'https://game.test/api/v2';
@@ -32,6 +32,16 @@ function setup(options: FakeGameOptions = {}) {
 }
 
 describe('playGame (TEST-03)', () => {
+  it('shows every event to the strategy, so it can learn within a game (CORE-09)', async () => {
+    const { api, events, onEvent } = setup({ solveSucceeds: () => false });
+    const seen: GameEvent[] = [];
+    const strategy: Strategy = Object.assign(new ExpectedValueStrategy(), {
+      observe: (event: GameEvent) => seen.push(event),
+    });
+
+    await playGame(api, strategy, { maxTurns: 100, onEvent });
+    expect(seen).toEqual(events);
+  });
   it('plays until lives run out and ends with game over (BOT-06)', async () => {
     const { api, events, onEvent } = setup({ solveSucceeds: () => false });
     const result = await playGame(api, new ExpectedValueStrategy(), { maxTurns: 100, onEvent });
