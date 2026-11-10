@@ -51,7 +51,7 @@ describe('POST /api/runs (BOT-11)', () => {
 
     const run = await getRun(app, response.json<{ runId: string }>().runId);
 
-    expect(run).toMatchObject({ strategy: 'expected-value', maxTurns: 42 });
+    expect(run).toMatchObject({ strategy: 'turn-phased', maxTurns: 42 });
   });
   it('rejects invalid input with a message per field (VAL-03)', async () => {
     const app = await testApp();
@@ -192,7 +192,7 @@ describe('GET /api/runs/:id/events (BOT-14)', () => {
 
     const types = parseSse(response.body).map(({ event }) => event.type);
 
-    expect(types).toEqual(['started', 'solved', 'solved', 'gameOver', 'status']);
+    expect(types).toEqual(['started', 'solved', 'bought', 'solved', 'gameOver', 'status']);
   });
   it('sends only what a reconnecting client missed (Last-Event-ID)', async () => {
     fakeGame();
@@ -208,7 +208,7 @@ describe('GET /api/runs/:id/events (BOT-14)', () => {
       headers: { 'last-event-id': '2' },
     });
 
-    expect(parseSse(response.body).map(({ id }) => id)).toEqual([3, 4]);
+    expect(parseSse(response.body).map(({ id }) => id)).toEqual([3, 4, 5]);
   });
   it('streams live events while the run plays', async () => {
     fakeGame();

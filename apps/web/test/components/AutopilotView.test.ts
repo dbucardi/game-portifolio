@@ -39,7 +39,7 @@ describe('AutopilotView', () => {
     await user.type(maxTurns, '50');
     await user.click(screen.getByRole('button', { name: 'Start run' }));
     expect(await screen.findByText(/^Solved 'Defend the fort'/)).toBeInTheDocument();
-    expect(requests).toEqual([{ strategy: 'expected-value', maxTurns: 50 }]);
+    expect(requests).toEqual([{ strategy: 'turn-phased', maxTurns: 50 }]);
     expect(await screen.findByTestId('run-summary')).toHaveTextContent('Turn limit reached. Score 1100 in 2 turns.');
   });
 });

@@ -83,8 +83,8 @@ describe('runs store', () => {
 
     const runs = setup();
 
-    await runs.startRun({ strategy: 'expected-value', maxTurns: 50 });
-    expect(requestBody).toEqual({ strategy: 'expected-value', maxTurns: 50 });
+    await runs.startRun({ strategy: 'turn-phased', maxTurns: 50 });
+    expect(requestBody).toEqual({ strategy: 'turn-phased', maxTurns: 50 });
     expect(runs.activeRunId).toBe('run-1');
     await vi.waitFor(() => {
       expect(runs.activeRun?.status).toBe('finished');

@@ -1,6 +1,6 @@
 /**
  * BOT-25: asks a running bot service for a benchmark, prints it and saves it.
- *   pnpm bench --games 30 --strategies expected-value,safest-first
+ *   pnpm bench --games 30 --strategies turn-phased,safest-first
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { request } from 'node:http';

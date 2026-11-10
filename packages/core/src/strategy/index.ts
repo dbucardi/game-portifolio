@@ -1,25 +1,22 @@
 import { z } from 'zod';
-import { ExpectedValueStrategy } from './expectedValue';
 import { SafestFirstStrategy } from './safestFirst';
-import { StealBudgetStrategy } from './stealBudget';
+import { TurnPhasedStrategy } from './turnPhased';
 import type { Strategy } from './types';
 
-export const STRATEGY_NAMES = ['expected-value', 'safest-first', 'steal-budget'] as const;
+export const STRATEGY_NAMES = ['turn-phased', 'safest-first'] as const;
 
 export const strategyNameSchema = z.enum(STRATEGY_NAMES);
 
 export type StrategyName = z.infer<typeof strategyNameSchema>;
 
 export const STRATEGY_LABELS: Record<StrategyName, string> = {
-  'expected-value': 'Expected value',
+  'turn-phased': 'Turn-phased (steal, level up, then harvest)',
   'safest-first': 'Safest first',
-  'steal-budget': 'Steal budget',
 };
 
 const FACTORIES: Record<StrategyName, () => Strategy> = {
-  'expected-value': () => new ExpectedValueStrategy(),
+  'turn-phased': () => new TurnPhasedStrategy(),
   'safest-first': () => new SafestFirstStrategy(),
-  'steal-budget': () => new StealBudgetStrategy(),
 };
 
 export function createStrategy(name: StrategyName): Strategy {
@@ -30,12 +27,14 @@ export * from './types';
 
 export * from './scoring';
 
-export { ExpectedValueStrategy, HEALING_POTION_ID, DEFAULT_EV_OPTIONS } from './expectedValue';
+export { BaseStrategy, HEALING_POTION_ID, DEFAULT_SHOPPING_OPTIONS } from './base';
 
-export type { ExpectedValueOptions } from './expectedValue';
+export type { ShoppingOptions } from './base';
 
-export { SafestFirstStrategy } from './safestFirst';
+export { SafestFirstStrategy, DEFAULT_MIN_LIVES_BEFORE_UPGRADES, DOUBLE_UPGRADE_COST } from './safestFirst';
 
-export { StealBudgetStrategy, DEFAULT_STEAL_BUDGET, STEAL_SUCCESS_RATE } from './stealBudget';
+export type { SafestFirstOptions } from './safestFirst';
 
-export type { StealBudgetOptions } from './stealBudget';
+export { TurnPhasedStrategy, DEFAULT_STEAL_BUDGET, STEAL_SUCCESS_RATE, DEFAULT_BUILD_UNTIL_TURN, DEFAULT_UPGRADE_UNTIL_TURN } from './turnPhased';
+
+export type { TurnPhasedOptions } from './turnPhased';

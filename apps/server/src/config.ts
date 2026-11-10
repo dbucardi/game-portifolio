@@ -8,7 +8,7 @@ export const configSchema = z.object({
   PORT: z.coerce.number().int().min(0).max(65535).default(3000),
   HOST: z.string().default('0.0.0.0'),
   GAME_API_URL: z.string().url().default(DEFAULT_GAME_API_URL),
-  DEFAULT_STRATEGY: strategyNameSchema.default('expected-value'),
+  DEFAULT_STRATEGY: strategyNameSchema.default('turn-phased'),
   MAX_TURNS: maxTurnsSchema.default(DEFAULT_MAX_TURNS),
   MAX_ACTIVE_RUNS: positiveInt.default(5),
   BENCH_MAX_CONCURRENCY: positiveInt.default(4),

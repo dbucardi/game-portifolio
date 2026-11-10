@@ -16,7 +16,7 @@ function registry(overrides: Partial<RunRegistryOptions> = {}) {
   const runs = new RunRegistry({
     api: gameApi(),
     logger: silent,
-    defaultStrategy: 'expected-value',
+    defaultStrategy: 'turn-phased',
     defaultMaxTurns: 3,
     maxActiveRuns: 2,
     ttlMs: 60_000,
@@ -72,7 +72,7 @@ describe('RunRegistry', () => {
     expect(subscription.ended).toBe(false);
     release();
     await waitFor(() => runs.get(runId).status === 'finished');
-    expect(received).toEqual(['solved', 'solved', 'gameOver', 'status']);
+    expect(received).toEqual(['solved', 'bought', 'solved', 'gameOver', 'status']);
   });
   it('stops every active run on close', async () => {
     fakeGame();

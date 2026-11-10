@@ -55,12 +55,12 @@ describe('runBenchmark (BOT-21)', () => {
     fakeGame();
 
     const report = await runBenchmark(
-      { games: 4, strategies: ['expected-value', 'safest-first'], maxTurns: 15 },
-      { api: gameApi(), limits, defaultStrategy: 'expected-value' },
+      { games: 4, strategies: ['turn-phased', 'safest-first'], maxTurns: 15 },
+      { api: gameApi(), limits, defaultStrategy: 'turn-phased' },
     );
 
     expect(report).toMatchObject({ gamesPerStrategy: 4, concurrency: 3, maxTurns: 15 });
-    expect(report.strategies.map((row) => row.strategy)).toEqual(['expected-value', 'safest-first']);
+    expect(report.strategies.map((row) => row.strategy)).toEqual(['turn-phased', 'safest-first']);
 
     for (const row of report.strategies) {
       expect(row).toMatchObject({
@@ -85,10 +85,10 @@ describe('runBenchmark (BOT-21)', () => {
       }),
     );
 
-    const report = await runBenchmark({ games: 3, concurrency: 1 }, { api: gameApi(), limits, defaultStrategy: 'expected-value' });
+    const report = await runBenchmark({ games: 3, concurrency: 1 }, { api: gameApi(), limits, defaultStrategy: 'turn-phased' });
     const [row] = report.strategies;
 
-    expect(row).toMatchObject({ games: 3, completed: 2, reachedTarget: 0, successRate: 0 });
+    expect(row).toMatchObject({ games: 3, completed: 2, reachedTarget: 2, successRate: 0.667 });
     expect(row?.errors).toHaveLength(1);
     expect(row?.endReasons).toEqual({ error: 1, 'max-turns': 2 });
   });
@@ -97,7 +97,7 @@ describe('runBenchmark (BOT-21)', () => {
       ads: () => [{ adId: 'big', message: 'Win big', reward: 600, expiresIn: 3, probability: 'Sure thing' }],
     });
 
-    const report = await runBenchmark({ games: 2, maxTurns: 2 }, { api: gameApi(), limits, defaultStrategy: 'expected-value' });
+    const report = await runBenchmark({ games: 2, maxTurns: 2 }, { api: gameApi(), limits, defaultStrategy: 'turn-phased' });
 
     expect(report.strategies[0]).toMatchObject({ reachedTarget: 2, successRate: 1 });
   });
@@ -116,7 +116,7 @@ describe('POST /api/benchmarks', () => {
     expect(response.statusCode).toBe(200);
     expect(response.json()).toMatchObject({
       gamesPerStrategy: 2,
-      strategies: [{ strategy: 'expected-value', games: 2 }],
+      strategies: [{ strategy: 'turn-phased', games: 2 }],
     });
   });
   it.each([

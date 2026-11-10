@@ -2,13 +2,16 @@ import { http, HttpResponse, type HttpHandler } from 'msw';
 import { DEFAULT_GAME_API_URL } from '../api/client';
 import type { GameState, RawAdInput as RawAd, Reputation, ShopItem } from '../api/schemas';
 import { successRate } from '../probability';
-import { HEALING_POTION_ID } from '../strategy';
+import { HEALING_POTION_ID, TRAP_PATTERNS } from '../strategy';
 
 /**
  * A deterministic, in-memory game that follows the API contract (docs/REQUIREMENTS.md §2):
  * text errors (API-10), 410 after game over, one turn per solve or purchase (API-14),
- * 3 lives and 0 of everything else at start (API-15).
+ * 3 lives and 0 of everything else at start (API-15), and steals that work until the reputation cliff (API-20).
  */
+
+/** API-20: steals succeed whatever their label until this many have succeeded, then always fail. */
+export const FAKE_STEAL_CLIFF = 5;
 
 export const FAKE_SHOP: ShopItem[] = [
   { id: HEALING_POTION_ID, name: 'Healing potion', cost: 50 },
@@ -63,7 +66,7 @@ export const FAKE_ADS: RawAd[] = [
 export interface FakeGameOptions {
   baseUrl?: string;
   ads?: (turn: number) => RawAd[];
-  /** Decides each solve. Default: succeeds when the label's estimated success rate is at least 0.5. */
+  /** Decides each solve. Default: a steal succeeds before the cliff (API-20); any other ad when its label's estimated success rate is at least 0.5. */
   solveSucceeds?: (ad: RawAd, decodedProbability: string) => boolean;
 }
 
@@ -82,8 +85,8 @@ export interface FakeGameApi {
 export function createFakeGameApi(options: FakeGameOptions = {}): FakeGameApi {
   const baseUrl = options.baseUrl ?? DEFAULT_GAME_API_URL;
   const adsForTurn = options.ads ?? (() => FAKE_ADS.map((ad) => ({ ...ad })));
-  const solveSucceeds = options.solveSucceeds ?? ((_ad, label) => successRate(label) >= 0.5);
   const games = new Map<string, FakeGame>();
+  const successfulSteals = new Map<string, number>();
   let nextId = 1;
   const gameOver = () => HttpResponse.json({ status: 'Game Over' }, { status: 410 });
   const text = (body: string, status: number) => new HttpResponse(body, { status, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
@@ -153,7 +156,14 @@ export function createFakeGameApi(options: FakeGameOptions = {}): FakeGameApi {
         return text('No ad by this ID exists', 400);
       }
 
-      const success = solveSucceeds(ad, decodeField(ad, ad.probability));
+      const label = decodeField(ad, ad.probability);
+      const isSteal = TRAP_PATTERNS.some((pattern) => pattern.test(decodeField(ad, ad.message)));
+      const steals = successfulSteals.get(game.gameId) ?? 0;
+      const success = options.solveSucceeds ? options.solveSucceeds(ad, label) : isSteal ? steals < FAKE_STEAL_CLIFF : successRate(label) >= 0.5;
+
+      if (success && isSteal) {
+        successfulSteals.set(game.gameId, steals + 1);
+      }
 
       if (success) {
         game.gold += Number(ad.reward);
@@ -229,6 +239,7 @@ export function createFakeGameApi(options: FakeGameOptions = {}): FakeGameApi {
     games,
     reset() {
       games.clear();
+      successfulSteals.clear();
       nextId = 1;
     },
   };

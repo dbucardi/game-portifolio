@@ -33,7 +33,7 @@ pnpm build
 ```sh
 # Start a run (both fields optional)
 curl -X POST localhost:3000/api/runs -H 'content-type: application/json' \
-  -d '{"strategy":"expected-value","maxTurns":300}'
+  -d '{"strategy":"turn-phased","maxTurns":300}'
 
 # Watch it live (Server-Sent Events)
 curl -N localhost:3000/api/runs/<runId>/events
@@ -44,7 +44,7 @@ curl localhost:3000/api/runs
 curl -X POST localhost:3000/api/runs/<runId>/stop
 
 # Benchmark: plays N games per strategy against the live API and saves docs/benchmark.json
-pnpm bench --games 30 --strategies expected-value,safest-first,steal-budget
+pnpm bench --games 30 --strategies turn-phased,safest-first
 ```
 
 ### API
@@ -81,7 +81,7 @@ From the environment or `apps/server/.env`, validated at startup:
 | ----------------------- | ------------------------------------- | ---------------------------------------------------------- |
 | `PORT`, `HOST`          | `3000`, `0.0.0.0`                     | Where the service listens                                  |
 | `GAME_API_URL`          | `https://dragonsofmugloar.com/api/v2` | Game API base URL                                          |
-| `DEFAULT_STRATEGY`      | `expected-value`                      | `expected-value`, `safest-first` or `steal-budget`         |
+| `DEFAULT_STRATEGY`      | `turn-phased`                         | `turn-phased` or `safest-first`                            |
 | `MAX_TURNS`             | `500`                                 | Default safety limit on turns per game (1–5000)            |
 | `MAX_ACTIVE_RUNS`       | `5`                                   | Runs playing at once; more are refused with 429            |
 | `BENCH_MAX_CONCURRENCY` | `4`                                   | Benchmark games in flight at once, to spare the public API |
@@ -91,6 +91,17 @@ From the environment or `apps/server/.env`, validated at startup:
 | `CORS_ORIGIN`           | `*`                                   | Comma-separated allowed origins                            |
 
 Runs live in memory, so a restart forgets them. On `SIGINT`/`SIGTERM` the service stops active runs before exiting.
+
+## Benchmark
+
+30 live games per strategy, capped at 100 turns (`pnpm bench --games 30 --max-turns 100`, run 2026-11-10). Both strategies reached 1000 points in every game.
+
+| Strategy       | Min  | p10  | Median | Max  | Mean     | Mean turns | Games reaching turn 100 |
+| -------------- | ---- | ---- | ------ | ---- | -------- | ---------- | ----------------------- |
+| `turn-phased`  | 3776 | 5089 | 6831   | 8965 | **6762** | 100.2      | 30                      |
+| `safest-first` | 2092 | 2461 | 3614   | 4694 | 3528     | 96.2       | 13                      |
+
+`turn-phased` takes steals until 5 have succeeded, then plays by expected value. Most of its gain comes from shopping. Every purchase uses up a turn (API-14). The game's phases are set by the turn (API-24), and a level raises the reward only (API-25). In the same run, a variant that kept buying upgrades to the end spent about a third of its turns in the shop and scored a mean of 5943. `turn-phased` stops at turn 40 and keeps its gold for potions, so it lives to turn 100.
 
 ## Layout
 

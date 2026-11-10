@@ -13,7 +13,7 @@ import { useRunsStore } from '@/stores/runs';
 const props = defineProps<{ disabled: boolean }>();
 const runs = useRunsStore();
 const { starting, stopping, canStop, activeRun } = storeToRefs(runs);
-const strategy = useStoredRef<StrategyName>('mugloar.strategy', strategyNameSchema, 'expected-value');
+const strategy = useStoredRef<StrategyName>('mugloar.strategy', strategyNameSchema, 'turn-phased');
 const maxTurnsText = useStoredRef('mugloar.maxTurns', z.string(), String(DEFAULT_MAX_TURNS));
 const touched = ref(false);
 const strategyOptions = STRATEGY_NAMES.map((name) => ({

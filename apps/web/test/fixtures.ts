@@ -7,7 +7,7 @@ export function aRun(overrides: Partial<Run> = {}): Run {
   return {
     runId: 'run-1',
     gameId: 'game0001',
-    strategy: 'expected-value',
+    strategy: 'turn-phased',
     maxTurns: 50,
     status: 'running',
     startedAt: '2026-11-06T10:00:00.000Z',

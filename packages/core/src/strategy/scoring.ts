@@ -11,6 +11,12 @@ export const LIFE_VALUE = 240;
  */
 export const TRAP_PATTERNS: readonly RegExp[] = [/\bsteal\b/i];
 
+/**
+ * CORE-12: quests that fail often whatever their label says. Unlike traps they cost no reputation,
+ * so only strategies that play safe avoid them. Reported from play, not yet measured by the benchmark.
+ */
+export const UNRELIABLE_PATTERNS: readonly RegExp[] = [/\badvertisement campaign\b/i];
+
 /** Scores within this many gold are a tie, and the ad that expires sooner wins. */
 export const TIE_MARGIN = 5;
 
@@ -26,6 +32,10 @@ export function expectedValue(ad: Ad, lives: number): number {
 
 export function isTrap(ad: Ad): boolean {
   return TRAP_PATTERNS.some((pattern) => pattern.test(ad.message));
+}
+
+export function isUnreliable(ad: Ad): boolean {
+  return UNRELIABLE_PATTERNS.some((pattern) => pattern.test(ad.message));
 }
 
 export function toRankedAd(ad: Ad, lives: number): RankedAd {

@@ -6,7 +6,7 @@ describe('loadConfig (BOT-16)', () => {
     expect(loadConfig({})).toMatchObject({
       PORT: 3000,
       GAME_API_URL: 'https://dragonsofmugloar.com/api/v2',
-      DEFAULT_STRATEGY: 'expected-value',
+      DEFAULT_STRATEGY: 'turn-phased',
       MAX_TURNS: 500,
       MAX_ACTIVE_RUNS: 5,
       BENCH_MAX_CONCURRENCY: 4,

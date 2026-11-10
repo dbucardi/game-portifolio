@@ -11,7 +11,7 @@ packages/core/          # @mugloar/core: isomorphic, no UI, no Node-only APIs (C
   src/api/              # GameApiClient (fetch, timeout, retry on 5xx/network), typed errors, zod schemas
   src/decode.ts         # Base64 / ROT13 ad decoding, unknown flags skipped (CORE-02, CORE-03)
   src/probability.ts    # label → success rate (CORE-04)
-  src/strategy/         # Strategy interface, scoring, ExpectedValue + SafestFirst, createStrategy(name)
+  src/strategy/         # Strategy interface, scoring, BaseStrategy, TurnPhased + SafestFirst, createStrategy(name)
   src/runner.ts         # playGame(): the bot loop (BOT-01 – BOT-08), cooperative stop via AbortSignal
   src/events.ts         # typed game events
   src/bot/contract.ts   # bot service request/response/run-event shapes, shared with the web app
@@ -47,7 +47,7 @@ pnpm dev                       # server :3000 + web :5173 (Vite proxies /api to 
 pnpm --filter @mugloar/core test        # one package; same for @mugloar/server, @mugloar/web
 pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build   # what CI runs
 pnpm format                    # fix formatting
-pnpm bench --games 30 --strategies expected-value,safest-first   # LIVE API, slow
+pnpm bench --games 30 --strategies turn-phased,safest-first   # LIVE API, slow
 ```
 
 Run the full CI line before saying a change is done, and report failures as they are.

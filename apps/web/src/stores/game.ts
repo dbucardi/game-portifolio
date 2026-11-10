@@ -1,6 +1,5 @@
 import {
   buyEvent,
-  createStrategy,
   decodeAds,
   describeError,
   gameOverEvent,
@@ -9,6 +8,7 @@ import {
   HEALING_POTION_ID,
   investigatedEvent,
   solveEvent,
+  toRankedAd,
   startedEvent,
   type Ad,
   type GameEvent,
@@ -62,7 +62,6 @@ export const useGameStore = defineStore('game', () => {
   const clock = injectRequired(clockKey);
   const random = injectRequired(randomKey);
   const preferences = usePreferencesStore();
-  const hintStrategy = createStrategy('expected-value');
   const session = reactive(emptySession());
   const ads = ref<Ad[]>([]);
   const shop = ref<ShopItem[]>([]);
@@ -84,7 +83,10 @@ export const useGameStore = defineStore('game', () => {
       return new Map();
     }
 
-    return new Map(hintStrategy.rankAds(session.stats, ads.value).map((entry) => [entry.ad.adId, entry]));
+    const lives = session.stats.lives;
+
+    // CORE-06 expected value per ad; the board order is never touched (FUN-01).
+    return new Map(ads.value.map((ad) => [ad.adId, toRankedAd(ad, lives)]));
   });
   const log = computed(() => toLogEntries(session.events));
   const isGameOver = computed(() => status.value === 'gameOver');
