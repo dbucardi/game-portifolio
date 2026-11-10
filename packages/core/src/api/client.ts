@@ -95,13 +95,17 @@ export class GameApiClient {
       controller.abort();
     }, this.timeoutMs);
     let response: Response;
+    let text: string;
 
+    // ERR-02: the timeout covers the body too, since the live API can send headers and then stall.
     try {
       response = await this.fetchImpl(`${this.baseUrl}${path}`, {
         method,
         headers: { Accept: 'application/json' },
         signal: controller.signal,
       });
+      // API-10: error bodies are HTML or plain text, so read text and parse JSON only on success.
+      text = await untilAborted(response.text(), controller.signal);
     } catch (error) {
       if (controller.signal.aborted) {
         throw new ApiError('timeout', `${method} ${path} timed out after ${this.timeoutMs} ms`);
@@ -111,9 +115,6 @@ export class GameApiClient {
     } finally {
       clearTimeout(timer);
     }
-
-    // API-10: error bodies are HTML or plain text, so read text and parse JSON only on success.
-    const text = await response.text();
 
     if (!response.ok) {
       throw toHttpError(response.status, text, `${method} ${path}`);
@@ -155,6 +156,20 @@ function shouldRetry(error: unknown, method: Method): boolean {
 
 function enc(segment: string): string {
   return encodeURIComponent(segment);
+}
+
+/** Not every fetch cancels a body read on abort (MSW does not), so the read races the signal. */
+function untilAborted<T>(promise: Promise<T>, signal: AbortSignal): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const onAbort = (): void => {
+      reject(new Error('Aborted'));
+    };
+
+    signal.addEventListener('abort', onAbort, { once: true });
+    promise.then(resolve, reject).finally(() => {
+      signal.removeEventListener('abort', onAbort);
+    });
+  });
 }
 
 function delay(ms: number): Promise<void> {

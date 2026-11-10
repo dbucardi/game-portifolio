@@ -157,6 +157,12 @@ describe('retries (ERR-03) and timeout (ERR-02)', () => {
       kind: 'timeout',
     });
   });
+  it('times out a response whose body never finishes (ERR-02)', async () => {
+    server.use(http.get(`${BASE}/:gameId/shop`, () => new HttpResponse(new ReadableStream({ start: () => undefined }), { status: 200 })));
+    await expect(client({ retries: 0, timeoutMs: 50 }).getShop('g')).rejects.toMatchObject({
+      kind: 'timeout',
+    });
+  });
   it('does not replay a POST that timed out', async () => {
     let calls = 0;
 
